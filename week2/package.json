@@ -1,0 +1,16 @@
+{
+  "name": "okcoders-backend-2021",
+  "version": "1.0.0",
+  "description": "backend module for OK Coders 2021",
+  "main": "server.js",
+  "scripts": {
+    "start": "echo \"Starting Server\" && nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "devoNOTbevo <devon.mobley@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.12"
+  }
+}
