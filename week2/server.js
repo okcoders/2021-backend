@@ -1,16 +1,15 @@
-// import modules
+/* ----- Modules -------*/
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
+const { User } = require('./schemas/schemas');
 
-const port = 5000;
+/* ----- Config/Init -------*/
+main().catch((err) => console.log(err));
 
-// middleware
-app.use(express.json());
-// end middleware
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/okcoders');
+}
 
 const testRecords = [
   {
@@ -25,6 +24,18 @@ const testRecords = [
   },
 ];
 
+const port = 5000;
+
+/* ----- Middlewares -------*/
+app.use(express.json());
+
+/* ----- Routes -------*/
+// Home
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+// User Routes
 app.get('/users', (req, res) => {
   res.json({
     success: true,
@@ -77,24 +88,16 @@ app.post('/users', (req, res) => {
 
   // take action on the data
   // save to the database/persistent storage
-  // saveUserToDatabase(data)
+  // saveUserToDatabase(data)`
   let returnData = {
     id: 3,
     ...data,
   };
 
-  // send back proper response
   res.status(201).send(returnData);
 });
 
-/*
- Create ~~ POST
- Read ~~ GET
- Update ~~ PUT/PATCH
- Delete ~~ DELETE
-*/
-
+/* ----- Run Server -------*/
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
-// export OR start a server
