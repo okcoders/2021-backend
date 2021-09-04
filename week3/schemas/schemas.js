@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 // define schema
 const usersSchema = new mongoose.Schema({
-  name: String,
-  email: String,
+  name: { type: String, required: true },
+  email: { type: String, required: true, index: { unique: true } },
+  isActive: { type: Boolean, default: true },
 });
 
 // compile model

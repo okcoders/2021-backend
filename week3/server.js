@@ -37,7 +37,9 @@ app.get('/', (req, res) => {
 
 // User Routes
 app.get('/users', async (req, res) => {
-  const users = await User.find({}).select('_id name email');
+  const users = await User.find({ isActive: true }).select(
+    '_id name email isActive'
+  );
 
   res.json({
     success: true,
@@ -66,35 +68,59 @@ app.get('/users/:userId', async (req, res) => {
 });
 
 app.post('/users', async (req, res) => {
-  // get data
-  const data = req.body;
+  try {
+    // get data
+    const data = req.body;
 
-  // validate the data
-  if (!data.name || !data.email) {
-    res.status(422).send();
-    return;
+    // take action on the data
+    // save to the database/persistent storage
+    let returnData = await User.create(data);
+    res.status(201).send(returnData);
+  } catch (e) {
+    if (e instanceof mongoose.Error.ValidationError) {
+      res.status(422).send();
+      return;
+    }
+
+    // TODO implement duplicate record error
+    // if (existingRecord) {
+    //   res.status(409).send();
+    //   return;
+    // }
+
+    res.status(500).json(e);
   }
-
-  if (existingRecord) {
-    res.status(409).send();
-    return;
-  }
-
-  // take action on the data
-  // save to the database/persistent storage
-  // saveUserToDatabase(data)`
-
-  let returnData = {
-    id: 3,
-    ...data,
-  };
-
-  res.status(201).send(returnData);
 });
 
-app.put('/users', async (req, res) => {});
-app.patch('/users', async (req, res) => {});
-app.delete('/users', async (req, res) => {});
+// app.put('/users', async (req, res) => {});
+app.patch('/users/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    // get data
+    const data = req.body;
+
+    // take action on the data
+    // save to the database/persistent storage
+    let returnData = await User.findByIdAndUpdate(userId, data);
+    res.send(returnData);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+});
+
+app.delete('/users/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const returnData = await User.findByIdAndUpdate(userId, {
+      isActive: false,
+    });
+    res.send(returnData);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+});
 
 /* ----- Run Server -------*/
 app.listen(port, () => {
