@@ -37,13 +37,38 @@ app.get('/', (req, res) => {
 
 // User Routes
 app.get('/users', async (req, res) => {
-  const users = await User.find({ isActive: true }).select(
-    '_id name email isActive'
-  );
+  // default case
+  const paramsObject = {};
+
+  const { is_active, name } = req.query;
+  const activeFlagIsDefined = is_active !== undefined;
+  const nameParamIsDefined = name !== undefined;
+
+  console.log('>>>>', is_active, '<<<<');
+  console.log(name);
+
+  // check query parameters case
+  if (activeFlagIsDefined) {
+    if (is_active === 'false') {
+      paramsObject.isActive = false;
+    } else {
+      paramsObject.isActive = true;
+    }
+  }
+
+  // go and try
+  if (nameParamIsDefined) {
+    paramsObject.name = { $regex: name, $options: 'i' };
+  }
+  // also try limit and sort
+
+  // execute query
+  const users = await User.find(paramsObject).select('_id name email isActive');
 
   res.json({
     success: true,
     users,
+    query: paramsObject,
   });
 });
 
